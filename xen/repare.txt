@@ -1,0 +1,18 @@
+#某次，因为使用xm destroy强制断掉了虚拟机的电源，导致该虚拟机磁盘数据损坏，再也无法启动，解决过程如下
+
+1  查看/etc/xen下的虚拟机配置文件，得知该虚拟机建立在/Data/xen/images/c5.img上。
+
+
+2  fdisk -l /Data/xen/images/c5.img  # 该命令可以查看到虚拟机在这个镜像文件上分了几个分区
+
+3  kpartx  -a  /Data/xen/images/c5.img   # 将虚拟机的分区映射到主机的/dev/mapper下
+
+4  fsck  /dev/mapper/loop2   #修复损坏的文件系统
+
+5 kpartx  -d  /Data/xen/images/c5.img  # 删除映射
+
+6  xm create 启动虚拟机，正常启动。
+
+
+
+ 

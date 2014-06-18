@@ -1,0 +1,5 @@
+export HISTFILESIZE=10000000
+export PROMPT_COMMAND="history -a"
+export HISTTIMEFORMAT="%Y-%m-%d_%H:%M:%S `whoami` "
+export HISTIGNORE="pwd:ls:ll:ls -al:"
+export HISTCONTROL="ignoredups"

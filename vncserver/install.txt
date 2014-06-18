@@ -1,0 +1,34 @@
+#服务器安装了桌面环境，可以使用vnc远程连接到服务器的桌面环境进行操作，即使服务器运行在字符模式下。
+
+#安装vnc-server
+yum install tigervnc-server
+
+vi /etc/sysconfig/vncservers
+
+VNCSERVERS="10:root"   #vncserver默认端口5900，如果指定桌面号为10，那么连接的时候就连接（5900+10）这个端口
+VNCSERVERARGS[10]="-geometry 800x600 -nolisten tcp"  #默认是只对localhost开放的，这里去掉了"-localhost"
+
+#设置vncserver的连接密码：
+
+vncspasswd
+
+service  vncserver start
+
+#vnc多用户登录
+
+vi /etc/sysconfig/vncservers
+
+VNCSERVERS="10:root 20:tom 30 herry" 
+VNCSERVERARGS[10]="-geometry 800x600 -nolisten tcp"
+VNCSERVERARGS[20]="-geometry 800x600 -nolisten tcp"
+VNCSERVERARGS[30]="-geometry 800x600 -nolisten tcp"
+
+# 为各用户设置vnc密码需要切换到各自的用户之后再执行vncpasswd
+
+# 设置tom的vnc密码
+su tom
+vncpasswd
+
+# 设置herry的vnc密码
+su herry
+vncpasswd

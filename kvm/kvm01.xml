@@ -1,0 +1,44 @@
+<domain type='kvm'> #这里的type一定不要选择qemu，虚拟机系统会非常迟钝
+  <name>kvm01</name>
+  <uuid>57d1c4d9-ed0b-2586-fa2f-88f0e8293779</uuid>
+  <memory>2097152</memory>
+  <currentMemory>2097152</currentMemory>
+  <vcpu>3</vcpu>
+  <os>
+    <type arch='x86_64' machine='rhel5.4.0'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' cache='none'/>
+      <source file='/kvm/kvm01.img'/> #虚拟机在主机上的位置
+      <target dev='hda' bus='ide'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <target dev='hdc' bus='ide'/>
+      <readonly/>
+    </disk>
+    <interface type='network'>  #主机到虚拟机网络不通，检查这里type是否选择了bridge
+      <mac address='54:52:00:5c:a6:1e'/>
+      <source network='default'/>
+    </interface>
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target port='0'/>
+    </console>
+    <input type='mouse' bus='ps2'/>
+    <graphics type='vnc' port='-1' autoport='yes' keymap='en-us'/>
+  </devices>
+</domain>

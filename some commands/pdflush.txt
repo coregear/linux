@@ -1,0 +1,41 @@
+pdflush
+
+cat /proc/sys/vm/nr_pdflush_threads #查看有多少个pdflush进程
+
+pdflush的行为受/proc/sys/vm下的参数控制
+
+/proc/sys/vm/dirty_writeback_centisecs #唤醒pdflush的周期，单位厘秒，也就是百分之一秒。默认值为500.
+
+pdflush被唤醒后，按顺序读取以下参数：
+
+/proc/sys/vm/dirty_expire_centiseconds #缓存数据的过期时间，默认3000，也就是30秒
+
+/proc/sys/vm/dirty_background_ratio #保留过期缓存的最大值,百分比，以Memfreee+Cached-Mapped的值为准。默认10
+
+
+
+以下参数也会影响pdflush
+
+/prco/sys/vm/dirty_ratio (default 40)  #总内存的最大百分比，系统所能拥有的最大脏页缓存的总量。超过这个值，开启pdflush写入硬盘。如果cache增长快于pdflush，那么整个系统在40%的时候遇到I/O瓶颈，所有的I/O都要等待cache被pdflush进硬盘后才能重新开始。
+
+
+对于有高度写入操作的系统
+dirty_background_ratio: 主要调整参数。如果需要把缓存持续的而不是一下子大量的写入硬盘，降低这个值。
+dirty_ratio：        第二调整参数。
+
+
+
+
+
+数据写入是间歇的，且每次数据量不会很大，则考虑加大各参数。
+
+数据写入非常频繁，则考虑减小参数，这样可以分散压力，降低磁盘负载
+
+
+1.通过这四个参数，可以控制脏数据在内存中占用多大比例写入磁盘文件系统；   dirty_background_ratio 
+
+2.脏数据在内存中最多可以存在多长时间，超过这个时间就写入磁盘；           dirty_expire_centisecs
+
+3.单个任务在内存中的脏数据所占内存比例多大则写入磁盘；                   dirty_ratio
+      
+4.pdflush内核线程执行的频率。                                            dirty_writeback_centisecs

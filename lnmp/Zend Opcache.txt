@@ -1,0 +1,1 @@
+如果要和Zend Guard Loader并存，则需要放到Zend Guard Loader的前面，不可与其他php加速插件并存。

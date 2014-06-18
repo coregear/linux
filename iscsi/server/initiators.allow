@@ -1,0 +1,5 @@
+# /etc/initiators.allow
+
+#iqn.<year>-<month>.<hostname>:<LVM diskname>
+#iqn.2009-03.pd920:mydiskname
+ALL  10.0.8.254

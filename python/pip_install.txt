@@ -1,0 +1,26 @@
+# 安装 distribute
+https://pypi.python.org/pypi/distribute
+
+unzip distribute-0.7.3.zip  
+
+cd distribute-0.7.3
+
+python setup.py install
+
+#安装pip 
+curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+
+python  get-pip.py
+
+
+# 使用
+pip install xxx
+
+pip install --upgrade xxx
+
+pip uninstall xxx
+
+###python的pip类似perl的MCPAN或者linux的yum apt-get等，管理自己的安装包
+
+##pip 是一个安装和管理 Python 包的工具 , 是 easy_install 的一个替换品
+

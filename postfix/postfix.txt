@@ -1,0 +1,118 @@
+#检查配置文件
+postfix check
+
+==================================
+#启动/关闭/重加载
+postfix  start|stop|relaod
+#除对inet_interfaces参数做修改之外，都不必重启postfix服务，使用reload即可。
+
+=========================================================
+#postfix多长时间扫描一次等待队列，默认1000秒
+quene_run_delay
+
+=====================================================
+
+#一封邮件最多有多少收件人，默认1000
+smtpd_recipient_limit
+
+#单封邮件的大小,默认10MB
+message_size_limit 
+
+====================================================================
+#同一客户端连续出错，postfix自动延迟响应时间，出错达到一定次数后断开连接
+smtpd_error_sleep_time = 1s
+smtpd_soft_error_limit = 10
+smtpd_hard_error_limit = 20
+#每次客户端出错之后，Postfix延迟1秒钟，连续10次之后，开始延长每次的延迟时间，第十一次等待11秒，第十二次等待12秒……，到达20次自动断开
+
+===================================================================
+
+#伪装主机名称
+masquetade_domains = 
+
+=========================================
+
+#投递地址发生变化。
+
+relocated_maps = hash:/etc/postfix/relocated
+
+#比如原来的kdent@exam.com邮箱已经不存在，更改为kdent@newexam.net,则可通过在relocated查询表中写入这样的内容：
+
+kdent@exam.com   kdent@newexam.net
+
+postmap  /etc/postfix/relocated
+
+postfix reload
+
+#这样，当用户再试图发邮件给kdent@exam.com的时候，postfix会拒收，并告诉发件人新的邮件地址
+#另外，如果relocated里的内容是网域名称，则代表整个网域已经搬迁，如
+
+@jiayeah.com   jiayeah.net
+
+这样Postfix会拒收所有发到jiayeah.com的邮件，并告诉发件人应该把邮件发到jiayeah.net
+
+==============================================================================
+
+#postfix默认是拒收不明用户的邮件的（就是在系统账户、别名表、查询表中都找不到这个用户名），如果想收取不明用户的邮件，可以这样设置：
+local_recipient_maps =
+luser_relay = support
+
+#local_recipient_maps参数设为空，（默认值是unix密码文件和别名表）support是一个有效的用户，那么所有的不明用户的邮件都会转到support的邮箱里。
+
+==========================================================================================
+#postfix队列管理程序qmgr可以使用的磁盘空间，默认值为0,即可以无限使用，可视情况设置适当上限
+queue_minfree = 
+
+
+==============================
+
+#邮件列表管理
+
+#显示邮件列表
+
+postqueue  -p 
+
+显示内容包括标识符（Queue ID）大小 到达时间 寄件人地址 收件人地址
+如果Queue ID栏加注一个星号，代表邮件是在活动列队，加注感叹号是在保留列队，无任何符号是在等待列队
+
+==============================================
+#删除队列中的邮件
+
+postsuper  -d  [Queue ID]
+
+postsuper -d  ALL 
+
+===========================================
+
+#将邮件放进或者移出保留队列
+
+postsuper -h [Queue ID]
+
+postsuper -H [Queue ID]
+
+======================================================
+#对邮件重新排队，也就是让邮件重新走一遍投递流程，以成功发送
+
+postsuper -r [Queue ID]
+postsuper -r ALL	
+
+#查看队列文件的内容
+postcat -q [Queue ID]
+
+#清空邮件。指的是让postfix立刻投递滞留在队列里的邮件的操作。前提是能确定邮件一定能成功投递，否则最好不要使用这个功能
+
+postqueue -f 
+
+#清空寄到特定站点的邮件，使用-s参数，并且收信站点要在fast_flush_domains参数之中
+postqueue -s example.com
+
+#example.com一定要要包含在fast_flush_domains参数之中
+fast_flush_domains = $relay_domains example.com
+
+#虚拟网域
+
+#独立网域+虚拟账户
+virtual_mailbox_domains  virtual_mainbox_base  virtual_mailbox_maps
+
+#独立网域+系统账户，邮件最终还是放到系统账户的邮箱内
+virttual_alias_domains   virtual_alias_maps

@@ -1,0 +1,11 @@
+# on centos
+yum install kernel-devel openssl-devel gcc rpm-build
+wget http://sourceforge.net/projects/iscsitarget/files/iscsitarget/1.4.20.2/iscsitarget-1.4.20.2.tar.gz
+tar -xvf iscsitarget-1.4.20.2.tar.gz
+cd iscsitarget-1.4.20.2
+make
+make instal
+
+service iscsi-target start
+
+chkconfig --level 3 iscsi-target on

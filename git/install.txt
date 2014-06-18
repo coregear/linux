@@ -1,0 +1,81 @@
+#安装依赖库
+yum install expat-devel zlib-devel curl-devel openssl-devel gettext-devel 
+
+#获取git源码
+git clone https://github.com/git/git
+
+#安装,进入到git目录
+
+make prefix=/Data/app
+make prefix=/Data/app  install
+
+#git的项目仓库克隆到本地，以便更新
+git clone git://git.kernel.org/pub/scm/git/git.git
+
+##########gitolite控制权限#############
+
+#安装在git用户下
+
+###客户端 
+su git
+ssh-keygen -f ~/.ssh/admin
+
+admin.pub发送到server端/home/git下
+
+###服务端
+
+su git
+cd
+git clone git://github.com/sitaramc/gitolite
+
+mkdir ~/bin
+
+./gitolite/install -to ~/bin
+
+./bin/gitolite  setup  -pk admin.pub #将admin公钥组添加到/home/git/.ssh/authorized_keys下，执行此操作前要确保authorized_keys为空或者不存在
+
+
+
+
+###################客户端常用命令#########################
+##########################################################
+#git config --system user.name ""
+#git config --system user.email xx@.com
+
+#git config --global user.name ""
+#git config --global user.email xx@.com
+
+#########################################################
+
+#初始化一个新的版本库
+git init  
+
+git add  file
+
+git commit file -m ""
+
+# 查看版本库状态
+git status
+
+# 修改记录
+git log
+
+# 命令记录
+git reflog
+
+#版本库回退到上个版本
+git reset --hard HEAD^  
+
+#版本库回退到上上个版本
+git reset --hard HEAD^^  
+
+#回退到指定版本
+git reset --hard d27413c
+
+#丢弃工作区的修改,让工作区文件回到最近的git add状态，若修改后尚未git add,则回到最近的git commit状态。
+git checkout -- file 
+
+#丢弃暂存区的修改,撤销git add
+git reset HEAD file
+
+

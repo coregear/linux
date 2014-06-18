@@ -1,0 +1,26 @@
+tar zxvf redis-2.6.16.tar.gz && cd redis-2.6.16
+
+make
+
+make test 
+
+##################################################################
+# 如果出现"You need tcl 8.5 or newer in order to run the Redis test"
+#
+# yum install tcl
+#
+# or #
+# tar zxvf tcl8.6.1-src.tar.gz && cd tcl8.6.1
+#
+#./configure --prefix=/usr && make && make install
+###################################################################
+
+make install 默认安装到/usr/local/bin下
+
+
+#将redis安装到指定位置
+make PREFIX=/path  install
+
+echo "vm.overcommit_memory=1" >> /etc/sysctl.conf
+
+sysctl -p

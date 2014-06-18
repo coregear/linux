@@ -1,0 +1,78 @@
+yum install kvm libvirt python-virtinst qemu-kvm virt-viewer
+
+#挂载光盘
+mount  /dev/cdrom   /mnt
+#修改yum源为本地光盘
+
+#在宿主机上安装kvm套件
+yum groupinstall kvm
+
+#加载kvm模块
+modprobe kvm
+modprobe kvm_intel #需要cpu支持虚拟化并在bios中开启该支持
+
+#创建40G大小的虚拟磁盘
+dd if=/dev/zero  of=/kvm/kvm01.img  bs=2M count=20480
+
+#生成10img，格式：qcow2，这种格式随容量大小变化，直到超过限定值。生成很快，文件也很小，拷贝很方便。 
+qemu-img create -f qcow2 centos.img  10G 
+
+#修改宿主机网卡设置，添加网桥
+vi  /etc/sysconfig/network-script/ifc-eth0  #现有的真实网卡
+
+DEVICE=eth0
+HWADDR=
+BOOTPROTO=no
+ONBOOT=yes
+TYPE=Ethernet
+BRIDGE=br0
+
+
+vi /etc/sysconfig/network-script/ifc-br0 #添加的网桥
+
+DEVICE=br0
+BOOTPROTO=static
+IPADDR=124.238.252.249
+NETMASK=255.255.255.0
+GATEWAY=
+TYPE=Bridge
+
+# 将光盘内容复制为本机上的iso文件
+dd  if=/dev/cdrom  of=/opt/rhel.iso  bs=2048
+
+#在虚拟磁盘上创建第一个虚拟机
+virt-install -n kvm01 -r 2048 --vcpus=2 -no-acpi -f /kvm/kvm01.img  --vnc -c /opt/rhel.iso
+
+#克隆虚拟机
+virt-clone --connect=qemu:///system -o blog-web-1 -n blog-web-2 -f /var/lib/libvirt/images/blog-web-2.img 
+#在克隆之前现行修改网卡信息（注释掉HAADDR，修改ip地址）
+
+#使用已有的虚拟机配置文件创建新的虚拟机
+virsh dumpxml node1 >/etc/libvirt/qemu/node2.xml
+vi  /etc/libvirt/qeme/node2.xml
+virsh  define  /etc/libvirt/qemu/node2.xml
+virsh  start  node2
+
+#虚拟机管理
+
+#配置文件
+/etc/libvirt/qeum/node_name.xml
+#编辑虚拟机配置文件
+virsh  edit  node_name
+
+#虚拟机开启vnc
+
+<graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1' keymap='en-us'/>
+   #port='-1' autoport='yes'：port自动分配，监听回环网络（virt-manager管理需要listen='127.0.0.1'）,无密码
+改为
+<graphics type='vnc' port='5904' autoport='no' listen='0.0.0.0' keymap='en-us' passwd='xiaobai'/>
+#固定vnc管理端口5904，不自动分配，vnc密码xiaobai，监听所有网络
+
+
+virsh  list
+virsh  destroy #强行关闭
+virsh  create  /etc/libvirt/qeum/kvm01.xml  #使用配置文件启动虚拟机
+virt-viwer  -c qemu///system  
+
+#
+

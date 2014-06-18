@@ -1,0 +1,20 @@
+default linux
+prompt 1
+timeout 1
+
+display boot.msg
+
+menu background splash.jpg
+menu title Welcome to CentOS 6.5!
+menu color border 0 #ffffffff #00000000
+menu color sel 7 #ffffffff #ff000000
+menu color title 0 #ffffffff #00000000
+menu color tabmsg 0 #ffffffff #00000000
+menu color unsel 0 #ffffffff #00000000
+menu color hotsel 0 #ff000000 #ffffffff
+menu color hotkey 7 #ffffffff #ff000000
+menu color scrollbar 0 #ffffffff #00000000
+
+label linux
+kernel vmlinuz
+append ks=http://10.10.67.11/ks.cfg initrd=initrd.img ksdevice=em1  #ksdevice=em1防止安装过程中提示选择网卡，多网卡服务器使用

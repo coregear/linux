@@ -1,0 +1,53 @@
+[rhel-debuginfo]
+
+name=Red Hat Enterprise Linux $releasever - $basearch - Debug
+
+baseurl=file:///mnt/Server
+
+enabled=1
+
+gpgcheck=0
+
+
+[Cluster]
+
+name=Red Hat Enterprise Linux $releasever - $basearch - Cluster
+
+baseurl= file:///mnt/Cluster
+
+enabled=1
+
+gpgcheck=0
+
+
+[ClusterStorage]
+
+name=Red Hat Enterprise Linux $releasever - $basearch - ClusterStorage
+
+baseurl= file:///mnt/ClusterStorage
+
+enabled=1
+
+gpgcheck=0
+
+
+[Server]
+
+name=Red Hat Enterprise Linux $releasever - $basearch - Server
+
+baseurl= file:///mnt/Server
+
+enabled=1
+
+gpgcheck=0
+
+
+[VT]
+
+name=Red Hat Enterprise Linux $releasever - $basearch - VT
+
+baseurl= file:///mnt/VT
+
+enabled=1
+
+gpgcheck=0

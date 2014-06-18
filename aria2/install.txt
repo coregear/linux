@@ -1,0 +1,46 @@
+#如果是源码安装，gcc 版本需要升级，4.7 or later
+./configure && make && make install
+
+
+#错误记录
+#make时出现如下错误
+  CXX      XmlRpcDiskWriter.lo
+  CXX      FallocFileAllocationIterator.lo
+  CXX      EpollEventPoll.lo
+  CXX      LibgnutlsTLSContext.lo
+  CXX      LibgnutlsTLSSession.lo
+LibgnutlsTLSSession.cc: In member function 'virtual int aria2::GnuTLSSession::init(int)':
+LibgnutlsTLSSession.cc:86:40: error: invalid conversion from 'unsigned int' to 'gnutls_connection_end_t' [-fpermissive]
+In file included from LibgnutlsTLSSession.h:40:0,
+                 from LibgnutlsTLSSession.cc:35:
+/usr/include/gnutls/gnutls.h:680:7: error:   initializing argument 2 of 'int gnutls_init(gnutls_session_int**, gnutls_connection_end_t)' [-fpermissive]
+make[3]: *** [LibgnutlsTLSSession.lo] Error 1
+make[3]: Leaving directory `/usr/src/RPM/BUILD/aria2-1.18.5/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/usr/src/RPM/BUILD/aria2-1.18.5/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/usr/src/RPM/BUILD/aria2-1.18.5'
+make: *** [all] Error 2
+
+# 解决方法
+# 修改src/LibgnutlsTLSSession.cc,约在文件第76行，行前带+的为添加的内容
+#
+int GnuTLSSession::init(sock_t sockfd)
+  {
+ +#if GNUTLS_VERSION_NUMBER >= 0x030000
+    unsigned int flags = tlsContext_->getSide() == TLS_CLIENT ?
+      GNUTLS_CLIENT : GNUTLS_SERVER;
+  #ifdef A2_DISABLE_OCSP
+ @@ -84,6 +85,11 @@ int GnuTLSSession::init(sock_t sockfd)
+  #endif // A2_DISABLE_OCSP
+  
+    rv_ = gnutls_init(&sslSession_, flags);
+ +#else // GNUTLS_VERSION_NUMBER >= 0x030000
+ +  rv_ = gnutls_init(
+ +      &sslSession_,
+ +      tlsContext_->getSide() == TLS_CLIENT ? GNUTLS_CLIENT : GNUTLS_SERVER);
+ +#endif // GNUTLS_VERSION_NUMBER >= 0x030000
+    if(rv_ != GNUTLS_E_SUCCESS) {
+      return TLS_ERR_ERROR;
+    }
+

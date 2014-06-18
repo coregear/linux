@@ -1,0 +1,44 @@
+yum install make gcc  gcc-c++ libtool autoconf automake imake  libxml2-devel expat-devel
+
+
+# 安装libiconv
+
+
+# 下载安装包
+wget http://www.coreseek.cn/uploads/csft/4.0/coreseek-4.1-beta.tar.gz
+
+tar zxvf coreseek-4.1-beta.tar.gz && cd coreseek-4.1-beta
+
+cd mmseg-3.2.14/
+./bootstrap   #autoconf版本不低于2.62
+
+./configure --prefix=/Data/app/mmseg3
+
+make && make install
+
+
+cd ..
+
+cd csft-4.1/
+
+sh buildconf.sh
+
+ ./configure --prefix=/Data/app/coreseek  --without-unixodbc --with-mmseg --with-mmseg-includes=/Data/app/mmseg3/include/mmseg --with-mmseg-libs=/Data/app/mmseg3/lib/ --with-mysql=/Data/app/mysql
+ 
+make && make install
+ 
+# 如果遇到类似与iconv相关的错误：undefined reference to libiconv_open'
+
+vi src/Makefile
+
+LIBS = -ldl -lm -lz -lexpat -L/usr/local/lib  修改为 LIBS = -ldl -lm -lz -lexpat -liconv  -L/usr/local/lib
+
+# 启动
+
+/Data/app/coreseek/bin/searchd -c /Data/app/coreseek/etc/csft_mysql.conf
+
+#每小时生成一次索引
+
+/Data/app/coreseek/bin/indexer -c /Data/app/coreseek/etc/csft_mysql.conf --all --rotate
+
+

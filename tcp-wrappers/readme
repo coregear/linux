@@ -1,0 +1,149 @@
+#匹配顺序
+hosts.allow,匹配成功则放行，不再匹配hosts.deny，反之才会去匹配hosts.deny，若二者冲突则以hosts.deny为准
+
+以下内容摘自博客：http://wordpress.facesoho.com/server/linux-tcp_wrappers.html
+简单介绍一下tcp-wrapers
+一. 首先检查某种服务是否受tcp_wrappers 管理
+ldd `which sshd` grep | libwrap
+如果有这个链接，说面某个服务接受tcp_wrappers管理
+二. 与tcp_wrappers相关的文件有
+/etc/hosts.allow
+/etc/hosts.deny
+三. 工作原理
+1. 当有请求从远程到达本机的时候
+首先检查/etc/hosts.allow
+如有匹配的，就默认允许访问,跳过 /etc/hosts.deny这个文件
+没有匹配的,就去匹配/etc/hosts.deny 文件,如果有匹配的，那么就拒绝这个访问
+2. 如果在这两个文件中，都没有匹配到，默认是允许访问的
+四. 这两个文件格式
+服务列表 ：地址列表 ：选项
+A. 服务列表格式：如果有多个服务，那么就用逗号隔开
+B. 地址列表格式：
+1. 标准IP地址：例如：192.168.0.254，192.168.0.56如果多于一个用，隔开
+2. 主机名称：例如：www.baidu.com，　.example.con匹配整个域
+3. 利用掩码：192.168.0.0/255.255.255.0指定整个网段
+4. 网络名称：例如 @mynetwork
+C. 选项：
+主要有allow 和 deny 这两个选项
+D. 其它的特定格式
+ALL ：指代所有主机
+LOCAL ：指代本地主机
+KNOWN ：能够解析的
+UNKNOWN ：不能解析的
+PARANOID ：
+
+五. 扩展选项：
+spawn : 执行某个命令 [spawn原意是产卵]
+vsftpd : spawn echo “login attempt from %c”to %s” | mail –s warning root
+twist : 中断命令的执行：
+vsftpd : twist echo “login attempt from %c to %s ” | mail –s waring root
+
+六. 一个例子
+在/etc/hosts.allow文件中指定下面的内容
+vsftpd: 192.168.0.
+in.telnetd, protmap: 192.168.0.8
+在/etc/hosts.deny中指定一下文件
+ALL: .cracker.org EXCEPT trusted.cracker.org
+vsftpd,protmap: ALL
+sshd: 192.168.0. EXCEPT 192.168.0.4
+
+TCP 封包先经过IP过滤机制IP Filtering [Linux 提供的第一层保护]
+
+可以将不想要的来源IP(经由 TCP 封包的 Head 资料)先当掉,如果通过了，再去通过TCP_wrappers过滤,
+如果上面两个都通过了,再根据每个服务访问控制设定 来决定客户机能得到的权限和信息.
+
+TCP_wrappers防火墙主要涉及到两个文件
+/etc/hosts.allow
+/etc/hosts.deny
+这两个文件被整合在xinetd中.
+
+需要安装tcp_wrappers套件,因为这两个文件是tcp_wrappers的设定文件,构成了一个基础的防火墙,
+tcp_wrappers设定tcp封装的包是否可以进入/etc/hosts.allow和/etc/hosts.deny,
+如果一个服务是受到 xinetd 或 TCP_Wrappers 的控制时，那么该服务就会受限于 hosts.allow 与 hosts.deny 的管理,
+
+先判断某个服务是否可以使用tcp_wrappers防火墙.vsftpd . telnet .sendmail、sshd、tcpd、xinetd、gdm、portmap都可以使用。
+很多服务在/etc/xined.d/目录中,可以对服务进行规则的设置.
+查看一个服务是否可以用tcp_wraper控制:
+#ldd  `which  servername`
+
+返回信息中有很多lib开头的链接文件[库文件],说明此服务受TCP_Wrapper规则控制.
+
+先看#cat /etc/xinetd.conf |less,如果enable和disable都为yes,那就以拒绝优先.
+
+only_from #定义只有指定的主机可以访问该服务.
+no_access #定义指定的主机不能访问该服务.
+
+only_from和no_access 定义的主机有包含的关系时,以小范围的为主,
+比如
+在only_from中1.1.1.0网段主机可以访问
+在no_access中1.1.0.0主机不能访问
+这时而不是拒绝优先,而是以only_from为准.
+
+cps #定义限制连接进来的主机数目.
+per_source #定义一台主机最大连接数目,通常和cps混用.
+instance #定义最大连接数目,这个数目是指不同的主机连接进来的数目,而不是同一台主机连接进来的数目..
+bind  #定义指定监听的IP地址(后只跟IP地址,而不是网卡的名字.)
+baner #定义欢迎信息,后面指定一个文件路径.此文件内容可自己定义..
+socket_type = stream #定义使用tcp协议..
+single_threaded #定义单线程
+multi_threaded  #定义多线程
+
+以ftp服务和telnet为例,
+机器名不只在/etc/sysconfig/network中定义,还存在于/etc/hosts,这两个文件中的机器名必须一致,否则即使开启了telnet,也无法telnet成功
+
+服务器IP:192.168.0.195先安装一个xinetd包,然后安装ftp包和telnet包.
+[root@station195 Server]# rpm -ivh xinetd-2.3.14-10.el5.i386.rpm
+[root@station195 Server]# rpm -ivh vsftpd-2.0.5-16.el5.i386.rpm
+[root@station195 Server]# rpm -ivh telnet-0.17-39.el5.i386.rpm
+[root@station195 Server]# rpm -ivh telnet-server-0.17-39.el5.i386.rpm
+编辑/etc/xinetd.d/telnet将disable = yes改为disable = no(启动telnet,默认不会开启.)
+[root@station195 Server]# service xinetd  restart
+[root@station195 Server]# chkconfig xinetd on
+编辑hosts.allow文件,写入一行vsftpd:192.168.0.0/255.255.255.0 EXCEPT 192.168.0.192
+再编辑/etc/hosts.deny文件,加入一行vsftpd:ALL,然后执行此命令
+[root@station195 ~]# chkconfig –level 35 vsftpd on
+[root@station195 ~]# service vsftpd restart
+
+可以让登录服务器时的消息发给服务器,用spawn命令.
+编辑hosts.allow文件
+写入in.telnetd:ALL:spawn /bin/echo `date` %c %d | /bin/mail -s “somebody access our ftp.”  root
+意思是:当有主机访问服务器时,向管理员发封邮件内容是somebody access our ftp .
+%c提取客户机的信息
+%d是守护进程的名字
+.当客户机telnet服务器后,服务器向自己发邮件,我们可以在服务器上使用mail命令查看内容
+
+From myaccount@example.com  Thu Feb 25 14:35:47 2010
+Date: Thu, 25 Feb 2010 14:35:47 +0800
+From: myaccount <myaccount@example.com>
+To: myaccount@example.com
+Subject: somebody access our telnet.
+Thu Feb 25 14:35:47 CST 2010 192.168.0.192 in.telnetd
+
+还可以给对方造成一种假象,提示对方输入用户名和密码,输入都正确,但是进不去.
+
+下面就要用到twist命令[中文是 曲解]
+ftp为例:
+编辑hosts.allow文件
+添加命令语句：
+vsftpd:ALL:twist /bin/echo   ” welcome to server.”
+
+访问FTP时就会提示输入用户名和密码,即使输正确了.但是进不去的.
+还可以返回给客户一句话,比方说在hosts.allow中写入
+vsftpd:ALL:twist /bin/echo  `date` “connection refused by  %s.”
+访问ftp时,直接会退出来,返回的信息.
+C:\>ftp 192.168.0.195
+Connected to 192.168.0.195.
+Thu Feb 25 15:15:41 CST 2010 connection refused by vsftpd@192.168.0.195.
+Connection closed by remote host.
+
+也可以将spawn和twist命令一起用.
+在hosts.allow中插入一句话
+vsftpd:ALL:spawn /bin/echo `date` %c to %s denied. >>/var/log/tcpwrapper.log:twist /bin/echo “attempt log to %s failed.”
+当登录服务器时会将返回信息定向到tcpwrapper.log中..
+Thu Feb 25 15:32:44 CST 2010 192.168.0.200 to vsftpd@192.168.0.195 denied.
+C:\>ftp 192.168.0.195
+Connected to 192.168.0.195.
+attempt log to vsftpd@192.168.0.195 failed.
+Connection closed by remote host.
+
+还可以定义欢迎信息banners

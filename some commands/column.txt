@@ -1,0 +1,7 @@
+column,格式化输出
+
+df -h | column -t
+
+column -s  '|' -t  filename
+
+-s 默认以空格为分隔符，这里指定为|

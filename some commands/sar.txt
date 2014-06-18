@@ -1,0 +1,21 @@
+sar  
+
+sar -u       CPU信息
+
+sar -q       队列长度及系统负载
+
+sar -r       内存及交换分区使用状况
+
+sar -b       I/O数据量
+
+sar -d       磁盘使用状况
+
+sar -B       内存分页监控
+
+sar -W       内存交换状况
+
+sar -n DEV   网络状况
+
+sar -n EDEV  网络错误的统计数据
+
+sar -n SOCK  套接字信息

@@ -1,0 +1,83 @@
+[client]
+default-character-set=utf8
+port = 3306
+socket = /tmp/mysql.sock
+[mysqld]
+character-set-server = utf8
+collation-server = utf8_general_ci
+#replicate-ignore-db = mysql
+#replicate-ignore-db = test
+#replicate-ignore-db = information_schema
+user = mysql
+port = 3306
+socket  = /tmp/mysql.sock
+basedir = /usr/local/mysql
+datadir = /data/mysql/data
+log-error = /data/mysql/mysql_error.log
+pid-file = /data/mysql/mysql.pid
+open_files_limit    = 600
+back_log = 20
+max_connections = 50
+max_connect_errors = 100
+external-locking = FALSE
+max_allowed_packet = 4M
+sort_buffer_size = 128K
+join_buffer_size = 128K
+thread_cache_size = 10
+thread_concurrency = 4
+query_cache_size = 0M
+query_cache_limit = 2M
+query_cache_min_res_unit = 2k
+default-storage-engine = MyISAM
+thread_stack = 192K
+transaction_isolation = READ-COMMITTED
+tmp_table_size = 512K
+max_heap_table_size = 32M
+long_query_time = 3
+log-slave-updates
+log-bin = /data/mysql/binlog/binlog
+binlog_cache_size = 2M
+binlog_format = MIXED
+max_binlog_cache_size = 4M
+max_binlog_size =512M
+expire-logs-days = 7
+#relay-log-index = /data/mysql/relaylog/relaylog
+#relay-log-info-file = /data/mysql/relaylog/relaylog
+#relay-log = /data/mysql/relaylog/relaylog
+key_buffer_size = 4M
+read_buffer_size = 1M
+read_rnd_buffer_size = 2M
+bulk_insert_buffer_size = 2M
+myisam_sort_buffer_size = 4M
+myisam_max_sort_file_size = 10G
+myisam_repair_threads = 1
+;myisam_recover
+
+interactive_timeout = 120
+wait_timeout = 120
+
+skip-name-resolve
+slave-skip-errors = 1032,1062,126,1114,1146,1048,1396
+server-id = 1
+
+;innodb_additional_mem_pool_size = 16M
+;innodb_buffer_pool_size = 512M
+;innodb_data_file_path = ibdata1:256M:autoextend
+;innodb_file_io_threads = 4
+;innodb_thread_concurrency = 8
+;innodb_flush_log_at_trx_commit = 2
+;innodb_log_buffer_size = 16M
+;innodb_log_file_size = 128M
+;innodb_log_files_in_group = 3
+;innodb_max_dirty_pages_pct = 90
+;innodb_lock_wait_timeout = 120
+;innodb_file_per_table = 0
+
+slow_query_log
+slow_query_log_file = /data/mysql/slow.log
+long_query_time = 1
+log-queries-not-using-indexes
+
+[mysqldump]
+quick
+max_allowed_packet = 4M

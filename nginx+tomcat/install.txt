@@ -1,0 +1,57 @@
+#nginx+tomcat如何保持客户端会话？
+
+1. tomcat sessioin共享，配置方法在apache+tomcat里有记录，同样适用于nginx+tomcat.这种方式所有tomcat共享session，涉及到session同步，在集群较大时可能会对性能有挑战
+
+2. 使用jvm_route, nginx的一个模块，根据cookie来将用户请求固定分配到同一后端tomcat。用户在第一次访问时，nginx就会在cookie中打上"标记"，这个标记就是后端tomcat的jvmroute,接下来该用户的所有请求都会分配给同一个tomcat，实现会话保持。
+
+
+##jvm_route模块添加
+
+# 获取最新版本
+
+svn checkout http://nginx-upstream-jvm-route.googlecode.com/svn/trunk/ nginx-upstream-jvm-route-read-only 
+
+#安装nginx，并为nginx添加模块
+
+tar zxvf nginx-upstream-jvm-route.tgz 
+
+tar zxvf nginx-1.4.7.tar.gz && cd nginx-1.4.7
+
+patch -p0 < ../nginx-upstream-jvm-route/jvm_route.patch
+
+./configure  ./configure --prefix=/Data/app/nginx-1.4.7  --with-pcre=/usr/local/pcre --with-openssl=/usr/local/openssl --with-http_sub_module --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --add-module=/Data/software/nginx-upstream-jvm-route
+
+make  && make install
+
+### nginx.conf
+
+
+    upstream tomcat {
+        server localhost:8080 srun_id=s1;
+        server localhost:8081 srun_id=s2;
+        server 10.10.67.115:8080 srun_id=s3;
+        server 10.10.67.115:8081 srun_id=s4;
+        jvm_route $cookie_JSESSIONID|sessionid reverse;
+    }
+	
+	
+server {
+        listen 80;
+        server_name xy.happigo.com;
+        access_log off;
+        if  ( $fastcgi_script_name ~ \..*\/.*php )  {
+                 return 403;
+        }
+        location / {
+                proxy_set_header   Host   $host;
+                proxy_set_header   X-Real-IP  $remote_addr;
+                proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_pass http://tomcat;
+        }
+}
+
+
+## tomcat   server.xml ,只需要添加jvmroute
+
+<Engine name="Catalina" defaultHost="localhost" jvmRoute="s1">
+~

@@ -1,0 +1,17 @@
+yum -y install iscsi-initiator-utils
+
+service iscsi start
+
+#客户端管理工具 iscsiadm
+#扫描
+iscsiadm -m discovery --type sendtargets --portal 192.168.255.30
+192.168.255.30:3260,1 iqn.20080-03.com.30:storage.iscsitest
+
+
+登记
+[root@centos49 iscsi]# iscsiadm -m node -T iqn.20080-03.com.30:storage.iscsitest -p 192.168.255.30 --login
+Login session [iface: default, target: iqn.20080-03.com.30:storage.iscsitest, portal: 192.168.255.30,3260]
+
+
+注销
+[root@centos49 iscsi]# iscsiadm -m node -T iqn.20080-03.com.30:storage.iscsitest -p 192.168.255.30 --logout

@@ -1,0 +1,76 @@
+uniq
+
+  -c或--count   在每列旁边显示该行重复出现的次数。
+  -d或--repeated   仅显示连续重复出现的行(一次)。
+  -f<栏位>或--skip-fields=<栏位>   忽略比较指定的栏位。
+  -s<字符位置>或--skip-chars=<字符位置>   忽略比较指定的字符。
+  -u或--unique   仅显示出一次的行列。
+  -w<字符位置>或--check-chars=<字符位置>   指定要比较的字符。
+  --help   显示帮助。
+  --version   显示版本信息。
+
+#####注意uniq操作是"连续重复出现"的行，没有连续出现则即使出现多次也不视为重复，所以在去重的时候一般与sort联合使用,先sort排序，保证重复的行连续出现，然后使用uniq显示连续重复行一次来达到去重效果
+
+[root@stu100 ~]# cat test 
+
+　　boy took bat home 
+
+　　boy took bat home 
+
+　　girl took bat home 
+
+　　dog brought hat home 
+
+　　dog brought hat home 
+
+　　dog brought hat home 
+
+　　看test文件的内容，可以看到其中的连续重复行 
+
+　　[root@stu100 ~]# uniq test 
+
+　　boy took bat home 
+
+　　girl took bat home 
+
+　　dog brought hat home 
+
+　　uniq命令不加任何参数，仅显示连续重复的行一次,注意这里的"连续重复"，不连续则在uniq看来不算重复
+
+　　[root@stu100 ~]# uniq -c test 
+
+　　2 boy took bat home 
+
+　　1 girl took bat home 
+
+　　3 dog brought hat home 
+
+　　-c 参数显示文件中每行连续出现的次数。 
+
+　　[root@stu100 ~]# uniq -d test 
+
+　　boy took bat home 
+
+　　dog brought hat home 
+
+　　-d选项仅显示文件中连续重复出现的行，且每个连续重复内容只显示一次。 
+
+　　[root@stu100 ~]# uniq -u test 
+
+　　girl took bat home 
+
+　　-u选项显示文件中没有连续出现的行。 
+
+　　[root@stu100 ~]# uniq -f 2 -s 2 test 
+
+　　boy took bat home 
+
+　　忽略每行的前2个字段，忽略第二个空白字符和第三个字段的首字符，结果at home 
+
+　　[root@stu100 ~]# uniq -f 1 test 
+
+　　boy took bat home 
+
+　　dog brought hat home 
+
+　　忽略每行的第一个字段，这样boy ，girl开头的行看起来是连续重复的行

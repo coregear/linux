@@ -1,0 +1,3 @@
+/etc/iscsi/initiatorname.iscsi
+InitiatorName=iqn.2009-10.com.ichiayi:vm-mail
+

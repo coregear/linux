@@ -1,0 +1,22 @@
+linux kickstart之中root的密码可以使用明文，也可以使用加密过的值
+rootpw –iscrypted $1$BYSimLw0$I515yLiKzudlwkIskBqQE1
+
+就是读取加密后的值，但是这个值是怎么生成的呢？
+这与linux系统的密码shadow一样，生成方法如下：
+
+perl -e 'print crypt("123456",q($1$BYSimLw0)),"\n"'
+
+其中123456是将要设置的密码,crypt用来给明文加密,
+
+$1$BYSimLw0的解释：
+
+$1  称为$id，如果id是1为md5加密，id为5为sha256加密，id为6为sha512加密
+
+BYSimLw0为自定义字符串，成为salt，加密操作会将此自定义字符串连同明文密码一同进行计算
+
+
+
+====================================================
+
+
+或者直接使用系统中的grub-crypt命令

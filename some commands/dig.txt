@@ -1,0 +1,33 @@
+dns查询工具，功能类似nslookup  （Domain Information Groper）
+
+yum install bind-utils
+
+
+dig @nameserver  www.baidu.com A
+使用指定的nameserver查询www.baidu.com的A记录，A可以是AAAA/PTR/MX/ANY等，A为默认值。
+
+
+dig -f  domainlist  -c IN -t A 
+
+-f的作用是从一个文件读取内容然后批量查询，文件内容要求每行一个请求
+
+-c的作用是指定协议类型 IN/CH/HS,默认IN
+
+
+dig -q 显示要查询的域名
+
+
+dig -x 反向查询
+
+
+dig +tcp 使用tcp方式查询
+
+dig +trace 跟踪dig全过程
+
+dig +nocmd 省略dig版本信息
+
+dig +short 精简输出
+
+dig +nocomment 省略注释信息
+
+dig +nostat  省略最后的统计信息

@@ -1,0 +1,16 @@
+*.tgz
+*.gz
+*.bz2
+*.xz
+*.msi
+*.exe
+*.rpm
+*.pdf
+*.bin
+*.php
+*.zip
+*.rar
+*.7z
+*~
+*.swp
+/gcc/gcc/

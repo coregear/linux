@@ -1,0 +1,10 @@
+#查看服务器型号、序列号
+dmidecode|grep "System Information" -A9|grep -E  "Manufacturer|Product|Serial"
+
+#查看内存的插槽数,已经使用多少插槽.每条内存多大
+dmidecode|grep -A5 "Memory Device"|grep Size|grep -v Range
+
+
+#查看内存的频率
+
+dmidecode|grep -A16 "Memory Device"|grep 'Speed' 

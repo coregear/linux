@@ -1,0 +1,16 @@
+#http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.tar.gz
+
+tar zxvf jdk-7u51-linux-x64.tar.gz -C /usr/local/
+
+
+# 设置java环境，[~/.bashrc]
+JAVA_HOME=/usr/local/jdk1.7.0_51
+PATH=$PATH:$JAVA_HOME/bin
+CLASSPATH=.:JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export JAVA_HOME PATH CLASSPATH
+
+#使设置生效
+
+source ~/.bashrc
+
+java  -version
