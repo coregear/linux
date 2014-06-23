@@ -44,6 +44,8 @@ mkdir ~/bin
 
 #git config --global user.name ""
 #git config --global user.email xx@.com
+#
+#git config --global push.default simple
 
 #########################################################
 
@@ -53,6 +55,12 @@ git init
 git add  file
 
 git commit file -m ""
+
+#与远程git版本库建立联系
+git remote add origin git@github.com:shidg/test.git
+
+#推送到远程版本库
+git push -u origin master
 
 # 查看版本库状态
 git status
