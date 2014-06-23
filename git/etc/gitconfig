@@ -1,0 +1,27 @@
+[gui]
+encoding = utf-8
+[i18n]
+commitencoding = gbk
+[svn] 
+pathnameencoding = gbk
+[core]
+	symlinks = false
+	autocrlf = false
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	interactive = true
+[pack]
+	packSizeLimit = 2g
+[help]
+	format = html
+[http]
+	sslCAinfo = /bin/curl-ca-bundle.crt
+[sendemail]
+	smtpserver = /bin/msmtp.exe
+
+[diff "astextplain"]
+	textconv = astextplain
+[rebase]
+	autosquash = true
