@@ -75,4 +75,4 @@ virsh  create  /etc/libvirt/qeum/kvm01.xml  #使用配置文件启动虚拟机
 virt-viwer  -c qemu///system  
 
 #
-
+# push test
