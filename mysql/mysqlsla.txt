@@ -1,0 +1,13 @@
+perl安装DBD::mysql 和DBI两个模块
+
+tar zxvf mysqlsla-2.03.tar.gz && cd mysqlsla-2.03
+
+perl MakeFile.PL
+
+make
+
+make install
+
+默认安装到mysqlsla-2.03/bin下，移动到$PATH下即可
+
+mysqlsla --log-type slow  slow.log
