@@ -1,0 +1,1 @@
+sersync2 -n 4 -o /etc/sersync/confxml.xml -d
