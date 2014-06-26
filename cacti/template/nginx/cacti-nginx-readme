@@ -1,0 +1,41 @@
+Scripts and templates for nginx.
+
+Provide graphing nginx clients statistics (active, reading, writing, waiting)
+and nginx socket statistics (accepts, handled, requests). It's a formal devision
+used only for graphs usability.
+
+For use do next steps:
+
+1. Enable nginx http_stub_status_module at configure stage (if requared).
+
+2. Enable stub status. Add to nginx.conf (in any server context):
+
+location /nginx_status {
+        stub_status on;
+	# disable access_log if requared
+	access_log   off;
+        #allow XX.YY.AA.ZZ;
+	#allow YY.ZZ.JJ.CC;
+        #deny all;
+}
+
+Restart nginx.
+
+3.
+
+cp get_nginx_clients_status.pl <path_cacti>/scripts/
+cp get_nginx_socket_status.pl <path_cacti>/scripts/
+chmod 0755 <path_cacti>/scripts/get_nginx_socket_status.pl
+chmod 0755 <path_cacti>/scripts/get_nginx_clients_status.pl
+
+4. Check that it's work. Run
+
+get_nginx_clients_status.pl http://nginx.server.tld/nginx_status
+
+and see that returned the same string:
+
+nginx_accepts:113869 nginx_handled:113869 nginx_requests:122594
+
+5. Import to cacti cacti_graph_template_nginx_clients_stat.xml and cacti_graph_template_nginx_sockets_stat.xml.
+
+6. Add nginx graphs to yours hosts.

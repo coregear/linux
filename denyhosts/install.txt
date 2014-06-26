@@ -1,0 +1,20 @@
+tar zxvf DenyHosts-2.6.tar.gz cd DenyHosts-2.6
+
+#install 
+python setup.py install
+
+# install to here by default
+cd /usr/share/denyhosts
+
+cp daemon-control-dist /etc/init.d/denyhosts
+
+#config file
+cp denyhosts.cfg-dist denyhosts.cfg
+
+chown root /etc/init.d/denyhosts
+
+chmod 700 /etc/init.d/denyhosts
+
+chkconfig --level 3 denyhosts on
+
+
