@@ -7,7 +7,6 @@
 *.rpm
 *.pdf
 *.bin
-*.php
 *.zip
 *.rar
 *.7z
