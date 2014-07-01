@@ -1,5 +1,10 @@
 sort
 
+sort 使用双逗号做分隔符
+
+s=',,'
+sort -t $'s' -k 2 filename
+
 ps -e -o'user,uid,pid,comm,args,pcpu,rss,vsz,stime'|sort -nrk7|head  #内存占用前十
 
 不加任何选项则按照字母表顺序或数字顺序（ASCII码值）排列，默认升序
