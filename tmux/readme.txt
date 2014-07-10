@@ -8,17 +8,15 @@ sh autogen.sh
 
 
 ###dep###
-从1.8版开始，tmux depends on libevent 2.x. 
-否则会有 make *** control.o error 1 的错误
+#确保安装了ncurses
+yum install ncurses-devel
 
-删除旧版本libevent，安装最新版
-
+#从1.8版开始，tmux depends on libevent 2.x. 否则会有 make *** control.o error1 的错误,删除旧版本libevent，安装最新版
 tar zxvf libevent-2.0.21-stable.tar.gz && cd libevent-2.0.21-stable
 ./configure --prefix=/usr
 make && make install
 
-
-# install
+# install tmux
 
 tar zxvf tmux-1.9a.tar.gz && cd tmux-1.9a
 ./configure
