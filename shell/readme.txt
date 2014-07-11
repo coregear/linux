@@ -132,3 +132,30 @@ echo ${stringZ//abc/xyz} 将所有abc替换为xyz
 echo ${stringZ/#abc/xyz} 替换字符串开头的abc
 
 echo ${stringZ/%abc/xyz} 替换结尾的abc
+
+18 变量替换
+$(cmd)
+`cmd`
+${var:-string} #如果$var为空则用string替换${var:-string},$var仍为空
+${var:=string} #如果$var为空则用string替换${var:-string},$var被赋值为string
+${var:+string} #如果$var不为空则用string替换${var:-string},如果$var为空则不替换
+${var:?string} #如果$var不为空则用$var的值替换${var:-string},$var为空的话string被输出到标准输出
+
+19 $(()) 结构
+
+$ echo $((3+2)) 
+5 
+$ echo $((3>2)) 
+1 
+$ echo $((25<3 ? 2:3)) 
+3 
+$ echo $var
+
+$ echo $((var=2+3)) 
+5 
+$ echo $var 
+5 
+$ echo $((var++)) 
+5 
+$ echo $var 
+6 
