@@ -1,0 +1,95 @@
+1.下载客户端，安装：
+http://vpntech.googlecode.com/files/openvpn-2.1.1-gui-1.0.3-install-cn-64bit.zip
+ 
+2.将服务端打包文件解压，并将包内ca.crt、client1.crt、client1.key复制到安装目录的config下.
+ 
+3.在config下创建client.ovpn文件
+内容如下：
+-----------------------
+# 定义是一个客户端
+client
+ 
+# 定义使用路由IP模式，与服务端一致
+;dev tap
+dev tun
+ 
+# 定义Windows下使用的网卡名称,linux不需要
+;dev-node MyTap
+ 
+# 定义使用的协议，与服务端一致
+;proto tcp
+proto tcp
+ 
+# 指定服务端地址和端口,可以用多行指定多台服务器
+# 实现负载均衡（从上往下尝试）
+remote 192.168.100.90 1194
+;remote my-server-2 1194
+ 
+# 若上面配置了多台服务器，让客户端随机连接
+;remote-random
+ 
+# 解析服务器域名
+# Keep trying indefinitely to resolve the
+# host name of the OpenVPN server. Very useful
+# on machines which are not permanently connected
+# to the internet such as laptops.
+resolv-retry infinite
+ 
+# 客户端不需要绑定端口
+# Most clients do not need to bind to
+# a specific local port number.
+nobind
+ 
+# 也是为了让Openvpn也nobody运行（安全）
+# 注意：Windows不能设置
+;user nobody
+;group nobody
+ 
+# Try to preserve some state across restarts.
+persist-key
+persist-tun
+# 若客户端通过HTTP Proxy，在这里设置
+# 要使用Proxy，不能使用UDP为VPN的通讯协议
+;http-proxy-retry # retry on connection failures
+;http-proxy [proxy server] [proxy port #]
+# 无线网络有很多多余的头文件，设置忽略它
+;mute-replay-warnings
+# 重点，就是指定ca和客户端的证书
+ca ca.crt
+cert client1.crt
+key client1.key
+# 如果服务端打开了PAM认证模块，客户端需要另其有效
+;auth-user-pass
+# 一些安全措施
+# Verify server certificate by checking
+# that the certicate has the nsCertType
+# field set to "server". This is an
+# important precaution to protect against
+# a potential attack discussed here:
+# http://openvpn.net/howto.html#mitm
+#
+# To use this feature, you will need to generate
+# your server certificates with the nsCertType
+# field set to "server". The build-key-server
+# script in the easy-rsa folder will do this.
+;ns-cert-type server
+ 
+# If a tls-auth key is used on the server
+# then every client must also have the key.
+;tls-auth ta.key 1
+ 
+# Select a cryptographic cipher.
+# If the cipher option is used on the server
+# then you must also specify it here.
+;cipher x
+ 
+# 使用lzo压缩，与服务端一致
+comp-lzo
+ 
+# Set log file verbosity.
+verb 3
+# Silence repeating messages
+;mute 20
+-----------------------
+5.连接：
+在右下角的openvpn图标上右击，选择“Connect”,若能正常分配IP，则连接成功。
